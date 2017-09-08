@@ -8,6 +8,7 @@ const SlackStrategy = require('@aoberoi/passport-slack').default.Strategy;
 const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
+const matrixQuotes = require('./matrix.json');
 
 // *** Initialize event adapter using verification token from environment variables ***
 const slackEvents = slackEventsApi.createSlackEventAdapter(
@@ -100,10 +101,11 @@ slackEvents.on('message', (message, body) => {
 		// Respond to the message back in the same channel
 		// slack.chat.postMessage(message.channel, `Hello <@${message.user}>! :tada:`)
 		//   .catch(console.error);
+		const randomInt = getRandomInt(0, matrixQuotes.length);
 		slack.chat
 			.postMessage(
 				message.channel,
-				`<@${message.user}> stop trying to hit me, and hit me!`
+				`<@${message.user}> ${matrixQuotes[randomInt]}`
 			)
 			.catch(console.error);
 	}
@@ -143,3 +145,9 @@ const port = process.env.PORT || 3000;
 http.createServer(app).listen(port, () => {
 	console.log(`server listening on port ${port}`);
 });
+
+function getRandomInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
